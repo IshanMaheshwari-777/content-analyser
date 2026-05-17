@@ -77,11 +77,12 @@ for key, default in {
 # ─── Sidebar ────────────────────────────────────────────────────────────
 
 with st.sidebar:
-    st.image(
-        "https://degreebaba.com/wp-content/uploads/2024/01/"
-        "DegreeBaba-Logo.webp",
-        width=180,
-    )
+    st.sidebar.markdown("""
+        <div style='padding: 16px 0 24px 0;'>
+            <span style='color:#E84010; font-size:20px; font-weight:700;'>degree</span>
+            <span style='color:white; font-size:20px; font-weight:700;'>baba</span>
+        </div>
+    """, unsafe_allow_html=True)
     st.markdown("### Content Publisher")
     st.markdown("---")
     st.markdown(f"**Screen:** {st.session_state['screen']} / 4")
@@ -260,52 +261,96 @@ def screen_validation():
     payload = st.session_state["payload"]
 
     # Metric cards
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("✅ Mapped", len(v["mapped"]))
-    c2.metric("🤖 AI Mapped", len(v["ai_mapped"]))
-    c3.metric("⚠️ Thin", len(v["thin"]))
-    c4.metric("❌ Missing", len(v["missing"]))
+    col1, col2, col3, col4 = st.columns(4)
+
+    mapped_count = len(v.get("mapped", []))
+    ai_mapped_count = len(v.get("ai_mapped", []))
+    thin_count = len(v.get("thin", []))
+    missing_count = len(v.get("missing", []))
+
+    with col1:
+        st.markdown(f"""
+        <div style='background:#EAF3DE;border:1px solid #B6D98A;border-radius:10px;padding:16px 20px;'>
+            <div style='font-size:28px;font-weight:700;color:#3B6D11;'>{mapped_count}</div>
+            <div style='font-size:13px;color:#3B6D11;margin-top:4px;'>✅ Mapped</div>
+        </div>""", unsafe_allow_html=True)
+
+    with col2:
+        st.markdown(f"""
+        <div style='background:#E6F1FB;border:1px solid #93C4EE;border-radius:10px;padding:16px 20px;'>
+            <div style='font-size:28px;font-weight:700;color:#185FA5;'>{ai_mapped_count}</div>
+            <div style='font-size:13px;color:#185FA5;margin-top:4px;'>🤖 AI Mapped</div>
+        </div>""", unsafe_allow_html=True)
+
+    with col3:
+        st.markdown(f"""
+        <div style='background:#FAEEDA;border:1px solid #F5C97A;border-radius:10px;padding:16px 20px;'>
+            <div style='font-size:28px;font-weight:700;color:#854F0B;'>{thin_count}</div>
+            <div style='font-size:13px;color:#854F0B;margin-top:4px;'>⚠️ Thin Content</div>
+        </div>""", unsafe_allow_html=True)
+
+    with col4:
+        st.markdown(f"""
+        <div style='background:#FCEBEB;border:1px solid #F09595;border-radius:10px;padding:16px 20px;'>
+            <div style='font-size:28px;font-weight:700;color:#A32D2D;'>{missing_count}</div>
+            <div style='font-size:13px;color:#A32D2D;margin-top:4px;'>❌ Missing</div>
+        </div>""", unsafe_allow_html=True)
 
     # Score badge
     score = v["score"]
-    if score >= 80:
-        css = "score-green"
-    elif score >= 60:
-        css = "score-amber"
-    else:
-        css = "score-red"
-    st.markdown(
-        f'<div style="text-align:center;margin:20px 0;">'
-        f'<span class="{css}">Quality Score: {score}/100</span></div>',
-        unsafe_allow_html=True,
-    )
+    score_color = "#3B6D11" if score >= 80 else "#854F0B" if score >= 60 else "#A32D2D"
+    score_bg = "#EAF3DE" if score >= 80 else "#FAEEDA" if score >= 60 else "#FCEBEB"
+    score_border = "#B6D98A" if score >= 80 else "#F5C97A" if score >= 60 else "#F09595"
+
+    st.markdown(f"""
+    <div style='text-align:center;margin:24px 0;'>
+        <div style='display:inline-block;background:{score_bg};border:2px solid {score_border};
+        border-radius:12px;padding:16px 40px;'>
+            <div style='font-size:36px;font-weight:700;color:{score_color};'>{score}/100</div>
+            <div style='font-size:13px;color:{score_color};margin-top:4px;'>Quality Score</div>
+        </div>
+    </div>""", unsafe_allow_html=True)
 
     # Field status table
     st.subheader("Field Status")
     schema = get_field_schema(st.session_state["page_type"])
     required = schema.get("required_fields", {})
 
+    status_styles = {
+        "mapped":    ("✅", "#EAF3DE", "#3B6D11"),
+        "ai_mapped": ("🤖", "#E6F1FB", "#185FA5"),
+        "thin":      ("⚠️", "#FAEEDA", "#854F0B"),
+        "missing":   ("❌", "#FCEBEB", "#A32D2D"),
+        "failed":    ("🔴", "#FCEBEB", "#A32D2D"),
+    }
+
     for field_key, field_def in required.items():
         value = payload.get(field_key)
         label = field_def.get("label", field_key)
 
-        if field_key in v["missing"]:
-            status = "❌ Missing"
-        elif field_key in v["thin"]:
-            status = "⚠️ Thin"
-        elif field_key in v["ai_mapped"]:
-            status = "🤖 AI Mapped"
-        elif field_key in v["mapped"]:
-            status = "✅ Mapped"
+        if field_key in v.get("missing", []):
+            status = "missing"
+        elif field_key in v.get("failed", []):
+            status = "failed"
+        elif field_key in v.get("thin", []):
+            status = "thin"
+        elif field_key in v.get("ai_mapped", []):
+            status = "ai_mapped"
+        elif field_key in v.get("mapped", []):
+            status = "mapped"
         else:
-            status = "➖ N/A"
+            status = "n/a"
 
-        with st.expander(f"{status}  {label} (`{field_key}`)"):
-            if value is not None:
+        emoji, bg, color = status_styles.get(status, ("•", "#F3F4F6", "#4B5563"))
+        
+        with st.expander(f"{emoji} {status.replace('_', ' ').title()} — {label} (`{field_key}`)"):
+            if value is not None and value != "" and value != []:
                 preview = _preview(value)
-                st.text(preview)
+                st.markdown(f"<div style='color:#4B5563;font-size:13px;'>{preview[:300]}...</div>",
+                           unsafe_allow_html=True)
             else:
-                st.text("(empty)")
+                st.markdown(f"<div style='color:#A32D2D;font-size:13px;'>No content found</div>",
+                           unsafe_allow_html=True)
 
     # Unmapped headings
     if v["unmapped_headings"]:
