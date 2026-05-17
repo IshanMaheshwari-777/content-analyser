@@ -112,10 +112,26 @@ def detect_page_type(filename: str, sections: list) -> str:
     headings_lower = [s["heading"].lower() for s in sections]
     all_headings_text = " ".join(headings_lower)
     
+    # Filename-based specialization detection (highest priority)
+    SPECIALIZATION_KEYWORDS = [
+        "data science", "marketing", "finance", "hr analytics",
+        "business analytics", "digital marketing", "entrepreneurship",
+        "general management", "international finance", "operations",
+        "healthcare", "supply chain", "project management",
+        "human resource", "information technology"
+    ]
+    for kw in SPECIALIZATION_KEYWORDS:
+        if kw in filename_lower:
+            return "specialization"
+    
     # Specialization signals (check first — most specific)
     spec_signals = [
-        "specialization highlights", "other specializations", "capstone",
-        "explore other", "course details"
+        "specialization highlights", "other specializations",
+        "explore other specializations", "capstone",
+        "course details", "specialization fee",
+        "mba in data science", "examination pattern",
+        "mba in marketing", "mba in finance",
+        "mba in hr", "mba in business analytics",
     ]
     spec_score = sum(1 for sig in spec_signals if sig in all_headings_text)
     if "specialization" in filename_lower:

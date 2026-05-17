@@ -242,6 +242,12 @@ def map_headings(sections, page_type):
         heading_lower = raw_heading.lower().strip()
         normalized = normalize_heading(raw_heading)
 
+        # Guard: if normalization reduced heading to empty string, skip it
+        if not normalized or len(normalized) < 2:
+            mappings.append({"heading": raw_heading, "acf_field": "__skip__",
+                             "confidence": 100, "method": "exact_skip"})
+            continue
+
         # Step 1: exact match on raw lowercase heading
         if heading_lower in heading_map:
             acf_field = heading_map[heading_lower]

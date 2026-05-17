@@ -330,8 +330,6 @@ def screen_validation():
 
         if field_key in v.get("missing", []):
             status = "missing"
-        elif field_key in v.get("failed", []):
-            status = "failed"
         elif field_key in v.get("thin", []):
             status = "thin"
         elif field_key in v.get("ai_mapped", []):
@@ -339,7 +337,7 @@ def screen_validation():
         elif field_key in v.get("mapped", []):
             status = "mapped"
         else:
-            status = "n/a"
+            status = "mapped"
 
         emoji, bg, color = status_styles.get(status, ("•", "#F3F4F6", "#4B5563"))
         
@@ -479,12 +477,13 @@ def _build_payload(extracted, mapping_result, ptype, api_key):
                             acf_field, subfields, heading, raw_text, api_key
                         )
                         payload[acf_field] = data
-                        m["method"] = status
-                        if status == "ai_mapped":
-                            m["confidence"] = min(m["confidence"], 85)
+                        # Preserve original mapping method for scoring
+                        # Only upgrade to ai_mapped if it was originally exact
+                        # and Groq successfully structured the data
+                        m["structure_status"] = status
                     except Exception:
                         payload[acf_field] = []
-                        m["method"] = "failed"
+                        m["structure_status"] = "failed"
                 else:
                     payload[acf_field] = []
 

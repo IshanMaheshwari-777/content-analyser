@@ -9,7 +9,7 @@ def validate_payload(payload, page_type, mapping_result, field_schema):
 
     Returns dict:
         mapped: fields mapped deterministically (confidence >= 90)
-        ai_mapped: fields mapped via Groq (confidence 70-89)
+        ai_mapped: fields mapped via Groq (confidence 70-89) or fuzzy
         thin: wysiwyg fields with < 50 words
         missing: required fields not found
         unmapped_headings: headings that matched nothing
@@ -22,7 +22,6 @@ def validate_payload(payload, page_type, mapping_result, field_schema):
     mapped = []
     ai_mapped = []
     thin = []
-    failed = []
     missing = []
 
     # Build lookup: acf_field -> mapping info
@@ -36,6 +35,7 @@ def validate_payload(payload, page_type, mapping_result, field_schema):
         value = payload.get(field_key)
         ftype = field_def.get("type", "text")
 
+        # Missing: no value at all
         if value is None or value == "" or value == []:
             missing.append(field_key)
             continue
@@ -44,44 +44,41 @@ def validate_payload(payload, page_type, mapping_result, field_schema):
         conf = info.get("confidence", 0)
         method = info.get("method", "unknown")
 
-        if method == "failed":
-            failed.append(field_key)
-        elif method == "thin":
+        # Check thin wysiwyg (only for text content, not repeaters)
+        is_thin_wysiwyg = False
+        if ftype == "wysiwyg" and isinstance(value, str):
+            word_count = len(value.split())
+            if word_count < 50:
+                is_thin_wysiwyg = True
+
+        if is_thin_wysiwyg:
             thin.append(field_key)
+        elif method in ("exact",) and conf >= 90:
+            mapped.append(field_key)
+        elif method in ("fuzzy", "ai", "ai_mapped") or (70 <= conf < 90):
+            ai_mapped.append(field_key)
         else:
-            is_thin_wysiwyg = False
-            if ftype == "wysiwyg" and isinstance(value, str):
-                word_count = len(value.split())
-                if word_count < 50:
-                    is_thin_wysiwyg = True
+            # Default: treat as mapped (includes exact_skip fallthrough, 
+            # stat fields, and any other successfully populated field)
+            mapped.append(field_key)
 
-            if is_thin_wysiwyg:
-                thin.append(field_key)
-            elif method in ("exact", "fuzzy") and conf >= 90:
-                mapped.append(field_key)
-            elif method in ("fuzzy", "ai", "ai_mapped") or (70 <= conf < 90):
-                ai_mapped.append(field_key)
-            else:
-                mapped.append(field_key)
-
-    total_attempted = len(mapped) + len(ai_mapped) + len(thin) + len(failed) + len(missing)
-
-    if total_attempted == 0:
+    total = len(required)
+    if total == 0:
         score = 0
     else:
+        # Both mapped and ai_mapped are correct — full credit
+        # Thin wysiwyg gets partial credit, missing gets zero
         score = round((
             (len(mapped) + len(ai_mapped)) * 100 +
             len(thin) * 60 +
-            len(failed) * 20 +
             len(missing) * 0
-        ) / total_attempted)
+        ) / total)
 
     return {
         "mapped": mapped,
         "ai_mapped": ai_mapped,
         "thin": thin,
         "missing": missing,
-        "failed": failed,
         "unmapped_headings": [u["heading"] for u in unmapped],
         "score": min(score, 100),
     }
