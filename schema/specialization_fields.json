@@ -1,0 +1,26 @@
+{
+  "page_type": "specialization",
+  "description": "ACF field definitions for specialization page type",
+  "required_fields": {
+    "specialization_name": {"type": "text", "label": "Specialization Name"},
+    "about_content": {"type": "wysiwyg", "label": "About the Specialization"},
+    "highlights": {"type": "repeater", "label": "Specialization Highlights", "subfields": ["point", "description"]},
+    "eligibility_content": {"type": "wysiwyg", "label": "Eligibility Criteria"},
+    "fee_plans": {"type": "repeater", "label": "Fee Structure", "subfields": ["semester", "fee"]},
+    "emi_content": {"type": "wysiwyg", "label": "EMI Details"},
+    "admission_steps": {"type": "repeater", "label": "Admission Process", "subfields": ["step_number", "title", "description"]},
+    "syllabus_content": {"type": "wysiwyg", "label": "Syllabus / Curriculum"},
+    "exam_content": {"type": "wysiwyg", "label": "Exam Pattern"},
+    "placement_content": {"type": "wysiwyg", "label": "Placement Details"},
+    "hiring_partners": {"type": "repeater", "label": "Hiring Partners", "subfields": ["name"]},
+    "job_profiles": {"type": "repeater", "label": "Job Profiles", "subfields": ["title", "salary"]},
+    "other_specs": {"type": "repeater", "label": "Other Specializations", "subfields": ["name", "fee"]},
+    "faqs": {"type": "repeater", "label": "FAQs", "subfields": ["question", "answer"]},
+    "reviews": {"type": "repeater", "label": "Reviews", "subfields": ["review_text"]}
+  },
+  "stat_fields": {
+    "stat_fee": {"label": "Fee", "max_chars": 6},
+    "stat_duration": {"label": "Duration", "max_chars": 6},
+    "mode_of_learning": {"label": "Mode of Learning", "max_chars": 6}
+  }
+}

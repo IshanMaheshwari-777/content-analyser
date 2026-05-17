@@ -1,0 +1,30 @@
+{
+  "page_type": "course",
+  "description": "ACF field definitions for course page type",
+  "required_fields": {
+    "course_name": {"type": "text", "label": "Course Name"},
+    "meta_description": {"type": "text", "label": "Meta Description"},
+    "about_content": {"type": "wysiwyg", "label": "About the Program"},
+    "highlights": {"type": "repeater", "label": "Program Highlights", "subfields": ["point", "description"]},
+    "accreditations": {"type": "repeater", "label": "Accreditations", "subfields": ["name", "body"]},
+    "eligibility_content": {"type": "wysiwyg", "label": "Eligibility Criteria"},
+    "admission_steps": {"type": "repeater", "label": "Admission Process", "subfields": ["step_number", "title", "description"]},
+    "specializations": {"type": "repeater", "label": "Specializations Offered", "subfields": ["name"]},
+    "fee_plans": {"type": "repeater", "label": "Fee Structure", "subfields": ["semester", "fee"]},
+    "emi_content": {"type": "wysiwyg", "label": "EMI Details"},
+    "syllabus_content": {"type": "wysiwyg", "label": "Syllabus / Curriculum"},
+    "exam_content": {"type": "wysiwyg", "label": "Exam Pattern"},
+    "placement_content": {"type": "wysiwyg", "label": "Placement Details"},
+    "hiring_partners": {"type": "repeater", "label": "Hiring Partners", "subfields": ["name"]},
+    "job_profiles": {"type": "repeater", "label": "Job Roles & Salary", "subfields": ["title", "salary"]},
+    "faqs": {"type": "repeater", "label": "FAQs", "subfields": ["question", "answer"]},
+    "reviews": {"type": "repeater", "label": "Reviews", "subfields": ["review_text"]}
+  },
+  "stat_fields": {
+    "stat_fee": {"label": "Fee", "max_chars": 6},
+    "stat_duration": {"label": "Duration", "max_chars": 6},
+    "mode_of_learning": {"label": "Mode of Learning", "max_chars": 6},
+    "ugc_status": {"label": "UGC Status", "max_chars": 6},
+    "naac_grade": {"label": "NAAC Grade", "max_chars": 6}
+  }
+}

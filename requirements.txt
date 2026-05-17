@@ -1,0 +1,6 @@
+streamlit
+python-docx
+mammoth
+rapidfuzz
+groq
+python-dotenv

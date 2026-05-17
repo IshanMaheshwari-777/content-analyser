@@ -1,0 +1,35 @@
+{
+  "page_type": "university",
+  "description": "ACF field definitions for university page type",
+  "required_fields": {
+    "university_name": {"type": "text", "label": "University Name"},
+    "meta_description": {"type": "text", "label": "Meta Description"},
+    "about_content": {"type": "wysiwyg", "label": "About the University"},
+    "highlights": {"type": "repeater", "label": "Highlights / Facts", "subfields": ["point", "description"]},
+    "quick_facts": {"type": "stat_group", "label": "Quick Facts / Detail"},
+    "why_choose_content": {"type": "wysiwyg", "label": "Why Choose"},
+    "accreditations": {"type": "repeater", "label": "Accreditations", "subfields": ["name", "body"]},
+    "admission_steps": {"type": "repeater", "label": "Admission Process", "subfields": ["step_number", "title", "description"]},
+    "emi_content": {"type": "wysiwyg", "label": "EMI Details"},
+    "exam_content": {"type": "wysiwyg", "label": "Examination Process"},
+    "programs": {"type": "repeater", "label": "Programs Offered", "subfields": ["name", "duration", "fee", "mode", "eligibility"]},
+    "faculty": {"type": "repeater", "label": "Faculty Members", "subfields": ["name", "designation", "qualification", "experience"]},
+    "placement_content": {"type": "wysiwyg", "label": "Placement Details"},
+    "hiring_partners": {"type": "repeater", "label": "Hiring Partners", "subfields": ["name"]},
+    "faqs": {"type": "repeater", "label": "FAQs", "subfields": ["question", "answer"]},
+    "reviews": {"type": "repeater", "label": "Reviews", "subfields": ["review_text"]}
+  },
+  "stat_fields": {
+    "established_year": {"label": "Established Year", "max_chars": 6},
+    "stat_students": {"label": "Students", "max_chars": 6},
+    "stat_alumni": {"label": "Alumni", "max_chars": 6},
+    "stat_hiring_partners": {"label": "Hiring Partners", "max_chars": 6},
+    "stat_faculty": {"label": "Faculty", "max_chars": 6},
+    "naac_grade": {"label": "NAAC Grade", "max_chars": 6},
+    "ugc_status": {"label": "UGC Status", "max_chars": 6},
+    "mode_of_learning": {"label": "Mode of Learning", "max_chars": 6},
+    "nirf_rank": {"label": "NIRF Rank", "max_chars": 6},
+    "stat_fee": {"label": "Fee", "max_chars": 6},
+    "stat_duration": {"label": "Duration", "max_chars": 6}
+  }
+}
